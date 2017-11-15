@@ -1,0 +1,188 @@
+ Sub homework2() 'do for each worksheet
+     For Each ws In Worksheets
+          ' Set an initial variable for holding the Ticker symbol
+          
+          Dim ticker As String
+        
+          ' Set an initial variable for holding the total per Ticker
+          Dim Ticker_Total As Double
+          Dim Ticker_Open As Double
+          Dim Ticker_Close As Double
+          Dim rng As Range
+          Dim cell As Range
+          Dim highvalue As Double
+          Dim lowvalue As Double
+          Dim highvolume As Double
+          Dim lastrow As Long
+          Dim ticker1 As String
+          Dim ticker2 As String
+          Dim ticker3 As String
+          
+          
+          
+          lowvalue = 0
+          highvalue = 0
+          highvolume = 0
+          Ticker_Total = 0
+            
+          ' Keep track of the location for each Ticker in the summary table
+          Dim Summary_Table_Row As Integer
+          Summary_Table_Row = 2
+          Dim Summary_Table_Row2 As Integer
+          Summary_Table_Row2 = 2
+          ws.Range("I1").Value = "Ticker"
+          ws.Range("J1").Value = "Volume"
+          ws.Range("K1").Value = "Percentage Change"
+          ws.Range("L1").Value = "Yearly Change"
+          ws.Range("N2").Value = "Greatest % Increase"
+          ws.Range("N3").Value = "Greatest % Decrease"
+          ws.Range("N4").Value = "Greatest Total Volume"
+          ws.Range("O1").Value = "Ticker"
+          ws.Range("P1").Value = "Value"
+          
+          ' Loop through all Stock purchases
+          For i = 2 To ws.Cells(Rows.Count, 1).End(xlUp).Row
+          
+            If ws.Cells(i, 3).Value > 0 And ws.Cells(i, 1).Value <> ws.Cells(i - 1, 1).Value Then
+                
+                    Ticker_Open = ws.Cells(i, 3).Value
+                    
+            End If
+        
+            ' Check if we are still within the same Ticker, if it is not...
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            On Error Resume Next
+        
+              ' Set the Ticker
+              ticker = ws.Cells(i, 1).Value
+        
+              ' Add to the Ticker Total
+              Ticker_Total = Ticker_Total + ws.Cells(i, 7).Value
+        
+              ' Print the Ticker in the Summary Table
+              ws.Range("I" & Summary_Table_Row).Value = ticker
+        
+              ' Print the Ticker_Total to the Summary Table
+              ws.Range("J" & Summary_Table_Row).Value = Ticker_Total
+              
+                 'set ticker close
+              Ticker_Close = ws.Cells(i, 6).Value
+              
+              'print the Ticker close
+              
+              ws.Range("K" & Summary_Table_Row).Value = (Ticker_Close / Ticker_Open) - 1
+              ws.Range("L" & Summary_Table_Row).Value = Ticker_Close - Ticker_Open
+              
+        
+              ' Add one to the summary table row
+              Summary_Table_Row = Summary_Table_Row + 1
+              
+              ' Reset the Ticker Total
+              Ticker_Total = 0
+        
+            ' If the cell immediately following a row is the same brand...
+            Else
+        
+              ' Add to the Ticker Total
+              Ticker_Total = Ticker_Total + ws.Cells(i, 7).Value
+                    
+        
+            End If
+        
+        Next i
+        
+        lastrow = ws.Cells(Rows.Count, 11).End(xlUp).Row
+        Set rng = ws.Range(ws.Cells(2, 11), ws.Cells(lastrow, 11))
+            
+            'get the highest % change after initial run
+          
+        For i = 2 To lastrow
+    
+                If ws.Cells(i, 11).Value > highvalue Then highvalue = ws.Cells(i, 11).Value
+                
+    
+        Next i
+            
+            
+            'get the lowest % change
+            
+        For i = 2 To lastrow
+    
+                If ws.Cells(i, 11).Value < lowvalue Then lowvalue = ws.Cells(i, 11).Value
+                
+    
+        Next i
+            
+            'get the highest volume
+            
+        For i = 2 To lastrow
+    
+                If ws.Cells(i, 10).Value > highvolume Then highvolume = ws.Cells(i, 10).Value
+                
+    
+        Next i
+            
+            ws.Range("P2").Value = highvalue
+            ws.Range("P3").Value = lowvalue
+            ws.Range("P4").Value = highvolume
+          
+            
+            
+        For i = 2 To lastrow
+    
+                If ws.Cells(i, 11).Value = ws.Range("P2").Value Then
+                
+                ticker1 = ws.Cells(i, 9).Value
+                
+                End If
+               
+        Next i
+        
+            
+        For i = 2 To lastrow
+    
+                If ws.Cells(i, 11).Value = ws.Range("P3").Value Then
+                
+                ticker2 = ws.Cells(i, 9).Value
+                
+                End If
+                
+        Next i
+                
+        For i = 2 To lastrow
+    
+                If ws.Cells(i, 10).Value = ws.Range("P4").Value Then
+                
+                ticker3 = ws.Cells(i, 9).Value
+                
+                End If
+                
+        Next i
+    
+          
+       
+            
+            'print highest and lowest % change and also highest volume
+          
+            ws.Range("O2").Value = ticker1
+            ws.Range("O3").Value = ticker2
+            ws.Range("O4").Value = ticker3
+                 
+            ws.Range("K:K").NumberFormat = "0.00%"
+            ws.Range("P2:P3").NumberFormat = "0.00%"
+            ws.Range("P4").NumberFormat = "0"
+        
+        
+            For i = 2 To ws.Cells(Rows.Count, 12).End(xlUp).Row
+        
+                If ws.Cells(i, 12).Value >= 0 Then
+                        ws.Cells(i, 12).Interior.ColorIndex = 4
+                Else:   ws.Cells(i, 12).Interior.ColorIndex = 3
+        
+            End If
+        
+            Next i
+        
+        Next ws
+    
+End Sub
